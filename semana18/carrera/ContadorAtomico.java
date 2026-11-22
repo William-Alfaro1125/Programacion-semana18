@@ -1,0 +1,34 @@
+package semana18.carrera;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class ContadorAtomico {
+    private final AtomicInteger valor = new AtomicInteger(0);
+
+    public void incrementar() {
+        valor.incrementAndGet();
+    }
+
+    public int getValor() {
+        return valor.get();
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        ContadorAtomico contador = new ContadorAtomico();
+        Runnable tarea = () -> {
+            for (int i = 0; i < 100_000; i++) {
+                contador.incrementar();
+            }
+        };
+
+        Thread t1 = new Thread(tarea);
+        Thread t2 = new Thread(tarea);
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+
+        System.out.println("Esperado: 200000");
+        System.out.println("Obtenido: " + contador.getValor());
+    }
+}
